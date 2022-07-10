@@ -1,6 +1,8 @@
 package domain
 
-import "errors"
+import (
+	"errors"
+)
 
 var (
 	// ErrInternalServerError will throw if any the Internal Server Error happen

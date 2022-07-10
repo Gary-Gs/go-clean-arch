@@ -24,7 +24,7 @@ services:
     environment:
       - MYSQL_DATABASE=article
       - MYSQL_USER=user
-      - MYSQL_PASSWORD=password
+      - MYSQL_PASSWORD=root
       - MYSQL_ROOT_PASSWORD=root
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]

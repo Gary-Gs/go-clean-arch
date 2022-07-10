@@ -1,6 +1,8 @@
 package domain
 
-import "context"
+import (
+	"context"
+)
 
 // Author ...
 type Author struct {
@@ -8,6 +10,10 @@ type Author struct {
 	Name      string `json:"name"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
+}
+
+func (Author) TableName() string {
+	return "author"
 }
 
 // AuthorRepository represent the author's repository contract

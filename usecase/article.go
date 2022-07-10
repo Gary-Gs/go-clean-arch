@@ -30,14 +30,15 @@ func NewArticleUsecase(a domain.ArticleRepository, ar domain.AuthorRepository, t
 * Look how this works in this package explanation
 * in godoc: https://godoc.org/golang.org/x/sync/errgroup#ex-Group--Pipeline
  */
-func (a *articleUsecase) fillAuthorDetails(c context.Context, data []domain.Article) ([]domain.Article, error) {
+func (a *articleUsecase) fillAuthorDetails(c context.Context, data []domain.Article) ([]*domain.ArticleResponse, error) {
 	g, ctx := errgroup.WithContext(c)
+	res := make([]*domain.ArticleResponse, 0)
 
 	// Get the author's id
 	mapAuthors := map[int64]domain.Author{}
 
 	for _, article := range data {
-		mapAuthors[article.Author.ID] = domain.Author{}
+		mapAuthors[article.AuthorID] = domain.Author{}
 	}
 	// Using goroutine to fetch the author's detail
 	chanAuthor := make(chan domain.Author)
@@ -73,49 +74,58 @@ func (a *articleUsecase) fillAuthorDetails(c context.Context, data []domain.Arti
 	}
 
 	// merge the author's data
-	for index, item := range data {
-		if a, ok := mapAuthors[item.Author.ID]; ok {
-			data[index].Author = a
+	for _, item := range data {
+		if a, ok := mapAuthors[item.AuthorID]; ok {
+			res = append(res, &domain.ArticleResponse{
+				ID:      item.ID,
+				Title:   item.Title,
+				Content: item.Content,
+				Author:  a,
+			})
 		}
 	}
-	return data, nil
+	return res, nil
 }
 
-func (a *articleUsecase) Fetch(c context.Context, cursor string, num int64) (res []domain.Article, nextCursor string, err error) {
-	if num == 0 {
-		num = 10
-	}
-
+func (a *articleUsecase) Fetch(c context.Context) ([]*domain.ArticleResponse, error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 
-	res, nextCursor, err = a.articleRepo.Fetch(ctx, cursor, num)
+	articles, err := a.articleRepo.Fetch(ctx)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
 
-	res, err = a.fillAuthorDetails(ctx, res)
-	if err != nil {
-		nextCursor = ""
-	}
-	return
+	res, err := a.fillAuthorDetails(ctx, articles)
+	return res, err
 }
 
-func (a *articleUsecase) GetByID(c context.Context, id int64) (res domain.Article, err error) {
+func (a *articleUsecase) GetByID(c context.Context, id int64) (*domain.ArticleResponse, error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 
-	res, err = a.articleRepo.GetByID(ctx, id)
+	article, err := a.articleRepo.GetByID(ctx, id)
 	if err != nil {
-		return
+		return nil, err
+	}
+	if article.ID == 0 {
+		return nil, domain.ErrNotFound
 	}
 
-	resAuthor, err := a.authorRepo.GetByID(ctx, res.Author.ID)
+	author, err := a.authorRepo.GetByID(ctx, article.AuthorID)
 	if err != nil {
-		return domain.Article{}, err
+		return nil, err
 	}
-	res.Author = resAuthor
-	return
+	if author.ID == 0 {
+		return nil, domain.ErrNotFound
+	}
+
+	return &domain.ArticleResponse{
+		ID:      article.ID,
+		Title:   article.Title,
+		Content: article.Content,
+		Author:  author,
+	}, nil
 }
 
 func (a *articleUsecase) Update(c context.Context, ar *domain.Article) (err error) {
@@ -126,30 +136,9 @@ func (a *articleUsecase) Update(c context.Context, ar *domain.Article) (err erro
 	return a.articleRepo.Update(ctx, ar)
 }
 
-func (a *articleUsecase) GetByTitle(c context.Context, title string) (res domain.Article, err error) {
-	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
-	defer cancel()
-	res, err = a.articleRepo.GetByTitle(ctx, title)
-	if err != nil {
-		return
-	}
-
-	resAuthor, err := a.authorRepo.GetByID(ctx, res.Author.ID)
-	if err != nil {
-		return domain.Article{}, err
-	}
-
-	res.Author = resAuthor
-	return
-}
-
 func (a *articleUsecase) Store(c context.Context, m *domain.Article) (err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
-	existedArticle, _ := a.GetByTitle(ctx, m.Title)
-	if existedArticle != (domain.Article{}) {
-		return domain.ErrConflict
-	}
 
 	err = a.articleRepo.Store(ctx, m)
 	return

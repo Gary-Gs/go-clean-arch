@@ -1,0 +1,16 @@
+appConfig:
+  logLevel: debug
+  apiPort: :9090
+  contextTimeOut: 3
+  timeZone: Etc/UTC
+  latencyWarningSec: 3
+
+database:
+  host: localhost
+  port: 3307
+  username: root
+  password: root
+  name: article
+  debug: true # log sql query
+  maxIdleConnections: 0 #0, no idle connections are retained.
+  maxConnectionLifetimeSecs: 0 #0, connections are not closed due to a connection's age.
