@@ -1,6 +1,6 @@
 module github.com/Gary-Gs/go-clean-arch
 
-go 1.14
+go 1.16
 
 require (
 	github.com/go-playground/validator/v10 v10.11.0

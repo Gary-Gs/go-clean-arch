@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"encoding/json"
@@ -106,7 +106,7 @@ func GetNewInstance(file string) (App, error) {
 		return app, fmt.Errorf("failed to initialize dependencies err: %s", err.Error())
 	}
 	repos := initRepos(deps.Database)
-	uc := initUseCases(repos, deps, configs)
+	uc := initUseCases(repos, configs)
 	app = App{
 		Dependencies: deps,
 		Configs:      configs,
@@ -155,7 +155,7 @@ func LoadConfigFile(file string) (config.Configs, error) {
 	return c, err
 }
 
-func getDBConnection(dbConf config.Database, conf config.Configs) (*gorm.DB, error) {
+func getDBConnection(dbConf config.Database) (*gorm.DB, error) {
 	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbConf.Username, dbConf.Password, dbConf.Host, dbConf.Port,
 		dbConf.Name)
 	val := url.Values{}
@@ -197,7 +197,7 @@ func initRepos(database *gorm.DB) Repositories {
 }
 
 func initDependencies(configs config.Configs) (d Dependencies, err error) {
-	d.Database, err = getDBConnection(configs.Database, configs)
+	d.Database, err = getDBConnection(configs.Database)
 	if err != nil {
 		return d, fmt.Errorf("failed to initialize DB connection: %s", err.Error())
 	}
@@ -206,7 +206,7 @@ func initDependencies(configs config.Configs) (d Dependencies, err error) {
 	}, nil
 }
 
-func initUseCases(repos Repositories, deps Dependencies, cnf config.Configs) Usecase {
+func initUseCases(repos Repositories, cnf config.Configs) Usecase {
 	contextTO := time.Duration(cnf.AppConfig.ContextTimeOut) * time.Second
 	au := usecase.NewArticleUsecase(repos.ArticleRepository, repos.AuthorRepository, contextTO)
 	uc := Usecase{
