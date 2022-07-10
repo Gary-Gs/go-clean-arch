@@ -1,9 +1,18 @@
-
-vendor/
-article_clean
-_*
-*.test
-.DS_Store
+# local
+*.iml
+tmp
+bin
 engine
-bin/
 .idea
+.DS_Store
+vendor
+.netrc
+
+resources/webapps/swagger/docs.go
+resources/webapps/swagger/swagger.json
+resources/webapps/swagger/swagger.yaml
+resources/mock/generated/*
+
+# testing
+coverage.html
+coverage.out
