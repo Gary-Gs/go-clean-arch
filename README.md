@@ -1,3 +1,9 @@
+This repo is forked from bxcodec/go-clean-arch, a clean architecture framework implementation for Go.
+
+I have done some optimization and refactoring to make it more efficient and easier to use as a template for greenfield projects.
+
+Just simply pull and get started.
+
 # go-clean-arch
 
 ## Changelog

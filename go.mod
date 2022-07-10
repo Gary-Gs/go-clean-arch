@@ -1,4 +1,4 @@
-module github.com/bxcodec/go-clean-arch
+module github.com/Gary-Gs/go-clean-arch
 
 go 1.12
 
