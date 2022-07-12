@@ -14,6 +14,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -56,10 +57,10 @@ func (a *App) InitApiEcho() *echo.Echo {
 	e.Use(midW.CORS)
 	e.Use(midW.MiddlewareLogging)
 	e.Validator = &CustomValidator{validator: validator.New()}
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Output: &mw.CustomLogWriter{Config: a.Configs},
 	}))
-	e.Static("/swagger", "resources/webapps/swagger")
 	// handlers
 	delivery.NewArticleHandler(e, a.Usecase.ArticleUsecase)
 	return e

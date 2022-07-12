@@ -8,9 +8,7 @@ engine
 vendor
 .netrc
 
-resources/webapps/swagger/docs.go
-resources/webapps/swagger/swagger.json
-resources/webapps/swagger/swagger.yaml
+resources/webapps/swagger
 resources/mock/generated/*
 
 # testing

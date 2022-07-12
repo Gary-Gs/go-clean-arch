@@ -6,6 +6,7 @@ import (
 )
 
 // Article ...
+// @Description article
 type Article struct {
 	ID        int64      `json:"id"`
 	Title     string     `json:"title" validate:"required"`
@@ -30,7 +31,7 @@ type ArticleResponse struct {
 type ArticleUsecase interface {
 	Fetch(ctx context.Context) ([]*ArticleResponse, error)
 	GetByID(ctx context.Context, id int64) (*ArticleResponse, error)
-	Upsert(context.Context, *Article) error
+	Upsert(ctx context.Context, article *Article) error
 	Delete(ctx context.Context, id int64) error
 }
 
@@ -38,6 +39,6 @@ type ArticleUsecase interface {
 type ArticleRepository interface {
 	Fetch(ctx context.Context) (res []Article, err error)
 	GetByID(ctx context.Context, id int64) (Article, error)
-	Upsert(ctx context.Context, a *Article) error
+	Upsert(ctx context.Context, article *Article) error
 	Delete(ctx context.Context, id int64) error
 }

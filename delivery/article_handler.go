@@ -18,12 +18,24 @@ func NewArticleHandler(e *echo.Echo, us domain.ArticleUsecase) {
 	handler := &ArticleHandler{
 		AUsecase: us,
 	}
-	e.POST("/articles", handler.CreateOrUpdate)
-	e.GET("/articles", handler.FetchArticle)
-	e.GET("/articles/:id", handler.GetByID)
-	e.DELETE("/articles/:id", handler.Delete)
+	e.POST("/api/v1/articles", handler.CreateOrUpdate)
+	e.GET("/api/v1/articles", handler.FetchArticle)
+	e.GET("/api/v1/articles/:id", handler.GetByID)
+	e.DELETE("/api/v1/articles/:id", handler.Delete)
 }
 
+// CreateOrUpdate godoc
+// @Summary      Create or update articles
+// @Description  Create or update articles
+// @Tags         articles
+// @Accept       json
+// @Produce      json
+// @Param  article  body      domain.Article  true  "article object"
+// @Success      200  {object}   HttpResponse
+// @Failure      400  {object}  HttpResponse
+// @Failure      404  {object}  HttpResponse
+// @Failure      500  {object}  HttpResponse
+// @Router       /api/v1/articles [post]
 func (a *ArticleHandler) CreateOrUpdate(c echo.Context) (err error) {
 	var article domain.Article
 	if err = c.Bind(&article); err != nil {
@@ -52,6 +64,17 @@ func (a *ArticleHandler) CreateOrUpdate(c echo.Context) (err error) {
 	})
 }
 
+// FetchArticle godoc
+// @Summary      Get articles
+// @Description  Get articles
+// @Tags         articles
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}   HttpResponse
+// @Failure      400  {object}  HttpResponse
+// @Failure      404  {object}  HttpResponse
+// @Failure      500  {object}  HttpResponse
+// @Router       /api/v1/articles [get]
 func (a *ArticleHandler) FetchArticle(c echo.Context) error {
 	ctx := c.Request().Context()
 	res, err := a.AUsecase.Fetch(ctx)
@@ -68,6 +91,18 @@ func (a *ArticleHandler) FetchArticle(c echo.Context) error {
 	})
 }
 
+// GetByID godoc
+// @Summary      Get articles by id
+// @Description  Get articles by id
+// @Tags         articles
+// @Accept       json
+// @Produce      json
+// @Param id   path      int  true  "article ID"
+// @Success      200  {object}   HttpResponse
+// @Failure      400  {object}  HttpResponse
+// @Failure      404  {object}  HttpResponse
+// @Failure      500  {object}  HttpResponse
+// @Router       /api/v1/articles/{id} [get]
 func (a *ArticleHandler) GetByID(c echo.Context) error {
 	ids := c.Param("id")
 	id, err := strconv.ParseInt(ids, 10, 64)
@@ -92,6 +127,18 @@ func (a *ArticleHandler) GetByID(c echo.Context) error {
 	})
 }
 
+// Delete godoc
+// @Summary      Delete articles by id
+// @Description  Delete articles by id
+// @Tags         articles
+// @Accept       json
+// @Produce      json
+// @Param id   path      int  true  "article ID"
+// @Success      200  {object}   HttpResponse
+// @Failure      400  {object}  HttpResponse
+// @Failure      404  {object}  HttpResponse
+// @Failure      500  {object}  HttpResponse
+// @Router       /api/v1/articles/{id} [delete]
 func (a *ArticleHandler) Delete(c echo.Context) (err error) {
 	ids := c.Param("id")
 	id, err := strconv.ParseInt(ids, 10, 64)

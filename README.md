@@ -41,13 +41,13 @@ $ make test
 Here is the steps to run it with `docker-compose`
 
 ```bash
-#move to directory
+# move to directory
 $ cd workspace
 
 # Clone into YOUR $GOPATH/src
 $ git clone https://github.com/Gary-Gs/go-clean-arch.git
 
-#move to project
+# move to project
 $ cd go-clean-arch
 
 # Build the docker image first
@@ -64,4 +64,10 @@ $ curl localhost:9090/articles
 
 # Stop
 $ make stop
+
+# Generate API Documentation @ http://{host}:{port}/swagger/index.html
+$ make swag
 ```
+
+## Tools used
+Detailed list can be found in `go.mod`

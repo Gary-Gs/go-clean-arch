@@ -5,6 +5,7 @@ RUN apk update && apk upgrade && \
 WORKDIR /app
 COPY . .
 RUN go build -o /app/engine /app/*.go
+RUN go get github.com/swaggo/swag/cmd/swag@v1.8.3 && make swag
 
 # Distribution
 FROM alpine:latest

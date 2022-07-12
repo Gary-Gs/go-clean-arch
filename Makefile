@@ -22,6 +22,9 @@ run:
 stop:
 	docker-compose down
 
+swag:
+	swag init --parseDependency --output resources/webapps/swagger --outputTypes go,yaml
+
 lint-prepare:
 	@echo "Installing golangci-lint" 
 	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s latest
