@@ -1,12 +1,12 @@
-This repo is a backend service boilerplate code, a clean architecture framework implementation for Go.
+# go-clean-arch
+
+This repo is a backend service boilerplate code, a clean architecture framework implementation for Go (with echo).
 
 Initially forked from bxcodec/go-clean-arch, I have done some optimization and refactoring to make it more efficient and easier to use for greenfield projects.
 
 Just simply pull and get started.
 
-# go-clean-arch
-
-## Description
+### Description
 This is an example of implementation of Clean Architecture in Go (Golang) projects.
 
 Rule of Clean Architecture by Uncle Bob
@@ -19,7 +19,7 @@ Rule of Clean Architecture by Uncle Bob
 More at https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 
 This project has  4 Domain layer :
- * Models Layer
+ * Model Layer
  * Repository Layer
  * Usecase Layer  
  * Delivery Layer
@@ -29,8 +29,9 @@ This project has  4 Domain layer :
 ![golang clean architecture](https://github.com/Gary-Gs/go-clean-arch/raw/master/resources/clean-arch.png)
 
 ### How to run this project in containerized environment
-1. install make: `brew install make` (macOS) or `apt-get install make` (Linux)
-2. install tools: `make tools`
+1. pre-requisite: golang v1.6+ and docker
+2. install make: `brew install make` (macOS) or `apt-get install make` (Linux)
+3. install tools: `make tools`
 4. run `docker-compose up`
 
 ```bash

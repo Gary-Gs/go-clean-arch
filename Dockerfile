@@ -10,7 +10,7 @@ RUN go get github.com/swaggo/swag/cmd/swag@v1.8.3 && make swag
 # Distribution
 FROM alpine:latest
 RUN apk update && apk upgrade && \
-    apk --update --no-cache add tzdata && \
+    apk --update --no-cache add tzdata bash && \
     mkdir /app
 WORKDIR /app
 EXPOSE 9090

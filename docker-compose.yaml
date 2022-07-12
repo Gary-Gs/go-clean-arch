@@ -16,7 +16,7 @@ services:
       - go_clean_arch_db
     volumes:
       - ./config.yaml:/app/config.yaml
-    command: [ "./wait-for-it.sh", "go_clean_arch_db:3306", "--","make", "migrate","--", "/app/engine" ]
+    command: [ "./wait-for-it.sh", "go_clean_arch_db:3306", "--", "/app/engine" ]
   go_clean_arch_db:
     image: mysql:5.7
     container_name: go_clean_arch_mysql
