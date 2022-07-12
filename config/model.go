@@ -15,7 +15,8 @@ type AppConfig struct {
 }
 
 type FeatureFlag struct {
-	EnableDB bool
+	EnableDB         bool
+	EnableExcludeUrl bool
 }
 
 type Database struct {

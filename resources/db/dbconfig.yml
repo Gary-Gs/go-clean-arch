@@ -1,0 +1,11 @@
+development:
+  dialect: mysql
+  datasource: user:root@tcp(localhost:3307)/article?parseTime=true
+  dir: resources/db
+  table: migrations
+
+docker:
+  dialect: mysql
+  datasource: user:root@tcp(go_clean_arch_db:3306)/article?parseTime=true
+  dir: resources/db
+  table: migrations

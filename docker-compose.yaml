@@ -1,32 +1,44 @@
-version: "2.3"
+version: "3.8"
 services:
-  web:
+  go_clean_arch_be:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: article_management_api
+    container_name: go_clean_arch_api
     ports:
       - 9090:9090
+    environment:
+      - DATABASE_HOST=go_clean_arch_db
+      - DATABASE_PORT=3306
+      - DATABASE_USERNAME=user
+      - DATABASE_PASSWORD=root
     depends_on:
-      mysql:
-        condition: service_healthy
+      - go_clean_arch_db
     volumes:
       - ./config.yaml:/app/config.yaml
-
-  mysql:
-    image: mysql:5.7 
+    command: [ "./wait-for-it.sh", "go_clean_arch_db:3306", "--","make", "migrate","--", "/app/engine" ]
+  go_clean_arch_db:
+    image: mysql:5.7
     container_name: go_clean_arch_mysql
-    command: mysqld --user=root
     volumes:
-      - ./article.sql:/docker-entrypoint-initdb.d/init.sql
+      - go_clean_arch_db_v:/var/lib/mysql
     ports:
-      - 3306:3306
+      - 3307:3306
     environment:
       - MYSQL_DATABASE=article
       - MYSQL_USER=user
       - MYSQL_PASSWORD=root
       - MYSQL_ROOT_PASSWORD=root
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 5s
-      retries: 10
+  migrate:
+    image: "gaary/sql-migrate:1.0"
+    container_name: go_clean_arch_migrate
+    entrypoint: [ "./wait-for-it/wait-for-it.sh", "go_clean_arch_db:3306", "--","sql-migrate", "up",  "--config=/app/resources/db/dbconfig.yml", "--env=docker" ]
+    volumes:
+      - ./resources/db:/app/resources/db
+    depends_on:
+      - go_clean_arch_db
+    environment:
+      - TIMEOUT=60
+volumes:
+  go_clean_arch_db_v:
+

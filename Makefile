@@ -1,4 +1,13 @@
 BINARY=engine
+
+tools:
+	@echo "installing air for hot reloading"
+	go get -u github.com/cosmtrek/air
+	@echo "installing sql-migrate to handle schema migrations"
+	go get -v github.com/rubenv/sql-migrate/...
+	@echo "installing swagger documentation"
+	go get -u github.com/swaggo/swag/cmd/swag
+
 test:
 	go test -coverprofile=coverage.out ./...
 	go tool cover -html=coverage.out -o coverage.html
@@ -24,6 +33,9 @@ stop:
 
 swag:
 	swag init --parseDependency --output resources/webapps/swagger --outputTypes go,yaml
+
+migrate:
+	sql-migrate up --config=resources/db/dbconfig.yml --env=development
 
 lint-prepare:
 	@echo "Installing golangci-lint" 

@@ -26,19 +26,12 @@ This project has  4 Domain layer :
 
 #### The diagram:
 
-![golang clean architecture](https://github.com/bxcodec/go-clean-arch/raw/master/clean-arch.png)
+![golang clean architecture](https://github.com/Gary-Gs/go-clean-arch/raw/master/resources/clean-arch.png)
 
-### How To Run This Project
-> Make Sure you have run the article.sql in your mysql
-
-#### Run the Testing
-
-```bash
-$ make test
-```
-
-#### Run the Applications
-Here is the steps to run it with `docker-compose`
+### How to run this project in containerized environment
+1. install make: `brew install make` (macOS) or `apt-get install make` (Linux)
+2. install tools: `make tools`
+4. run `docker-compose up`
 
 ```bash
 # move to directory
@@ -50,17 +43,14 @@ $ git clone https://github.com/Gary-Gs/go-clean-arch.git
 # move to project
 $ cd go-clean-arch
 
-# Build the docker image first
-$ make docker
-
-# Run the application
-$ make run
+# Bring up all dependencies and services
+$ docker-compose up
 
 # check if the containers are running
 $ docker ps
 
 # Execute the call
-$ curl localhost:9090/articles
+$ curl localhost:9090/api/v1/articles
 
 # Stop
 $ make stop
@@ -70,4 +60,4 @@ $ make swag
 ```
 
 ## Tools used
-Detailed list can be found in `go.mod`
+Detailed list can be found in `go.mod` and `Makefile`

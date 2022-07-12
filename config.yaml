@@ -7,11 +7,12 @@ appConfig:
 
 featureFlag:
   enableDB: true
+  enableExcludeUrl: true
 
 database:
   host: localhost
   port: 3307
-  username: root
+  username: user
   password: root
   name: article
   debug: true # log sql query

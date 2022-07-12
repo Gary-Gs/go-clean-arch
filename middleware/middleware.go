@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"github.com/Gary-Gs/go-clean-arch/common"
 	"github.com/Gary-Gs/go-clean-arch/config"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -12,6 +13,13 @@ import (
 	"strconv"
 	"strings"
 	"time"
+)
+
+var (
+	// URIs to exclude in the logs
+	pathToExclude = []string{
+		"/health",
+	}
 )
 
 // GoMiddleware represent the data-struct for middleware
@@ -54,7 +62,11 @@ func (m *GoMiddleware) MiddlewareLogging(next echo.HandlerFunc) echo.HandlerFunc
 		id := c.Response().Header().Get(echo.HeaderXRequestID)
 		c.SetRequest(c.Request().WithContext(context.WithValue(c.Request().Context(), echo.HeaderXRequestID, id)))
 
-		m.makeLogEntry(c).Debug("API Request:")
+		// exclude some URI in logs
+		if !common.ContainsIgnoreCase(pathToExclude, c.Path()) &&
+			m.Config.FeatureFlag.EnableExcludeUrl && !strings.Contains(c.Path(), "/swagger") {
+			m.makeLogEntry(c).Debug("API Request:")
+		}
 		return next(c)
 	}
 }
