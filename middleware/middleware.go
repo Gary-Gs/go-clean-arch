@@ -8,12 +8,19 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"regexp"
+	"strconv"
+	"strings"
 	"time"
 )
 
 // GoMiddleware represent the data-struct for middleware
 type GoMiddleware struct {
 	// another stuff , may be needed by middleware
+	Config config.Configs
+}
+
+type CustomLogWriter struct {
 	Config config.Configs
 }
 
@@ -65,4 +72,18 @@ func (m *GoMiddleware) makeLogEntry(c echo.Context) *log.Entry {
 		"uri":                 c.Request().URL.String(),
 		echo.HeaderXRequestID: c.Response().Header().Get(echo.HeaderXRequestID),
 	})
+}
+
+func (c *CustomLogWriter) Write(p []byte) (n int, err error) {
+	latencyReg, _ := regexp.Compile("\"latency\":[0-9]+")
+	latencyString := strings.ReplaceAll(latencyReg.FindString(string(p)), "\"latency\":", "")
+	latency, err := strconv.ParseFloat(latencyString, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	if latency/1000000000 > c.Config.AppConfig.LatencyWarningSec {
+		log.Warnf("API latency: %f seconds, log: %s", latency/1000000000, string(p))
+	}
+	return len(p), nil
 }

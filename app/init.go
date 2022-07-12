@@ -21,8 +21,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"regexp"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -50,10 +48,6 @@ type CustomValidator struct {
 	validator *validator.Validate
 }
 
-type CustomLogWriter struct {
-	Config config.Configs
-}
-
 func (a *App) InitApiEcho() *echo.Echo {
 	e := echo.New()
 	e.HTTPErrorHandler = customHTTPErrorHandler
@@ -63,7 +57,7 @@ func (a *App) InitApiEcho() *echo.Echo {
 	e.Use(midW.MiddlewareLogging)
 	e.Validator = &CustomValidator{validator: validator.New()}
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Output: &CustomLogWriter{Config: a.Configs},
+		Output: &mw.CustomLogWriter{Config: a.Configs},
 	}))
 	e.Static("/swagger", "resources/webapps/swagger")
 	// handlers
@@ -77,22 +71,6 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 		return err
 	}
 	return nil
-}
-
-func (c *CustomLogWriter) Write(p []byte) (n int, err error) {
-	latencyReg, _ := regexp.Compile("\"latency\":[0-9]+")
-	latencyString := strings.ReplaceAll(latencyReg.FindString(string(p)), "\"latency\":", "")
-	latency, err := strconv.ParseFloat(latencyString, 64)
-	if err != nil {
-		return 0, err
-	}
-
-	if latency/1000000000 > c.Config.AppConfig.LatencyWarningSec {
-		log.Warnf("API latency: %f seconds, log: %s", latency/1000000000, string(p))
-	} else {
-		log.Debugf(string(p))
-	}
-	return len(p), nil
 }
 
 func GetNewInstance(file string) (App, error) {
@@ -166,7 +144,7 @@ func getDBConnection(dbConf config.Database) (*gorm.DB, error) {
 		logger.Config{
 			SlowThreshold:             300 * time.Millisecond, // Slow SQL threshold
 			LogLevel:                  logger.Warn,            // Log level
-			IgnoreRecordNotFoundError: true,                   // Ignore ErrRecordNotFound error for logger
+			IgnoreRecordNotFoundError: false,                  // Ignore ErrRecordNotFound error for logger
 			Colorful:                  true,                   // Disable color
 		},
 	)
@@ -197,13 +175,13 @@ func initRepos(database *gorm.DB) Repositories {
 }
 
 func initDependencies(configs config.Configs) (d Dependencies, err error) {
-	d.Database, err = getDBConnection(configs.Database)
-	if err != nil {
-		return d, fmt.Errorf("failed to initialize DB connection: %s", err.Error())
+	if configs.FeatureFlag.EnableDB {
+		d.Database, err = getDBConnection(configs.Database)
+		if err != nil {
+			return d, fmt.Errorf("failed to initialize DB connection: %s", err.Error())
+		}
 	}
-	return Dependencies{
-		Database: d.Database,
-	}, nil
+	return
 }
 
 func initUseCases(repos Repositories, cnf config.Configs) Usecase {

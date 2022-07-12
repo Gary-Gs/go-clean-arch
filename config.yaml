@@ -1,9 +1,12 @@
 appConfig:
   logLevel: debug
   apiPort: :9090
-  contextTimeOut: 3
+  contextTimeOut: 5
   timeZone: Etc/UTC
   latencyWarningSec: 3
+
+featureFlag:
+  enableDB: true
 
 database:
   host: localhost

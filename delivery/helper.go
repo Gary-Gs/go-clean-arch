@@ -3,11 +3,13 @@ package delivery
 import (
 	"github.com/Gary-Gs/go-clean-arch/domain"
 	"github.com/go-playground/validator/v10"
-	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
-const OK = "OK"
+const (
+	OK         = "OK"
+	BadRequest = "bad request"
+)
 
 // ResponseError represent the reseponse error struct
 type ResponseError struct {
@@ -31,14 +33,14 @@ func getStatusCode(err error) int {
 
 	switch err {
 	case domain.ErrInternalServerError:
-		logrus.Error(err.Error())
 		return http.StatusInternalServerError
 	case domain.ErrNotFound:
 		return http.StatusNotFound
 	case domain.ErrConflict:
 		return http.StatusConflict
+	case domain.ErrContextTimeout:
+		return http.StatusRequestTimeout
 	default:
-		logrus.Error(err.Error())
-		return http.StatusInternalServerError
+		return http.StatusBadRequest
 	}
 }

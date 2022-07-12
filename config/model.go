@@ -1,8 +1,9 @@
 package config
 
 type Configs struct {
-	AppConfig AppConfig
-	Database  Database
+	AppConfig   AppConfig
+	FeatureFlag FeatureFlag
+	Database    Database
 }
 
 type AppConfig struct {
@@ -11,6 +12,10 @@ type AppConfig struct {
 	ContextTimeOut    int
 	TimeZone          string
 	LatencyWarningSec float64
+}
+
+type FeatureFlag struct {
+	EnableDB bool
 }
 
 type Database struct {

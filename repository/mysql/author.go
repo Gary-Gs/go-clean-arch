@@ -18,6 +18,5 @@ func NewMysqlAuthorRepository(db *gorm.DB) domain.AuthorRepository {
 
 // GetByID will get the author by primary key
 func (m *mysqlAuthorRepo) GetByID(ctx context.Context, id int64) (res domain.Author, err error) {
-	m.db.Where("id = ?", id).First(&res)
-	return
+	return res, m.db.WithContext(ctx).Where("id = ?", id).First(&res).Error
 }

@@ -2,11 +2,10 @@ package mysql
 
 import (
 	"context"
-	_ "database/sql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/Gary-Gs/go-clean-arch/domain"
-	_ "github.com/sirupsen/logrus"
 )
 
 type mysqlArticleRepository struct {
@@ -20,36 +19,22 @@ func NewMysqlArticleRepository(conn *gorm.DB) domain.ArticleRepository {
 
 // Fetch will get all articles
 func (m *mysqlArticleRepository) Fetch(ctx context.Context) (res []domain.Article, err error) {
-	err = m.db.Find(&res).Error
-	return res, err
+	return res, m.db.WithContext(ctx).Find(&res).Error
 }
 
 // GetByID will get the article by primary key
 func (m *mysqlArticleRepository) GetByID(ctx context.Context, id int64) (res domain.Article, err error) {
-	m.db.Where("id = ?", id).First(&res)
-	return
+	return res, m.db.WithContext(ctx).Where("id = ?", id).First(&res).Error
 }
 
-// GetByTitle will get the article by title
-func (m *mysqlArticleRepository) GetByTitle(ctx context.Context, title string) (res domain.Article, err error) {
-	m.db.Where("title = ?", title).First(&res)
-	return
-}
-
-// Store will create a new article
-func (m *mysqlArticleRepository) Store(ctx context.Context, a *domain.Article) (err error) {
-	m.db.Create(a)
-	return
+// Upsert will update or create the article
+func (m *mysqlArticleRepository) Upsert(ctx context.Context, o *domain.Article) (err error) {
+	return m.db.WithContext(ctx).Model(o).Clauses(clause.OnConflict{
+		UpdateAll: true,
+	}).Create(o).Error
 }
 
 // Delete will delete the article by primary key
 func (m *mysqlArticleRepository) Delete(ctx context.Context, id int64) (err error) {
-	m.db.Delete(&domain.Article{}, id)
-	return
-}
-
-// Update will update the article by struct
-func (m *mysqlArticleRepository) Update(ctx context.Context, o *domain.Article) (err error) {
-	m.db.Model(&o).Updates(&o)
-	return
+	return m.db.WithContext(ctx).Delete(&domain.Article{}, id).Error
 }

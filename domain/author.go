@@ -2,14 +2,15 @@ package domain
 
 import (
 	"context"
+	"time"
 )
 
 // Author ...
 type Author struct {
-	ID        int64  `json:"id"`
-	Name      string `json:"name"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	ID        int64      `json:"id"`
+	Name      string     `json:"name"`
+	UpdatedAt *time.Time `json:"updated_at,omitempty" gorm:"-"`
+	CreatedAt *time.Time `json:"created_at,omitempty" gorm:"-"`
 }
 
 func (Author) TableName() string {
