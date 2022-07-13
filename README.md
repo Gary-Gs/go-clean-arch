@@ -32,7 +32,7 @@ This project has  4 Domain layer :
 1. pre-requisite: golang v1.6+ and docker
 2. install make: `brew install make` (macOS) or `apt-get install make` (Linux)
 3. install tools: `make tools`
-4. run `docker-compose up`
+4. follow steps below:
 
 ```bash
 # move to directory
