@@ -10,7 +10,5 @@ vendor
 
 resources/webapps/swagger
 resources/mock/generated/*
-
-# testing
-coverage.html
-coverage.out
+resources/coverage.html
+resources/coverage.out

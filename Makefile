@@ -9,9 +9,10 @@ tools:
 	go get -u github.com/swaggo/swag/cmd/swag
 
 test:
-	go test -coverprofile=coverage.out ./...
-	go tool cover -html=coverage.out -o coverage.html
-	go tool cover -func coverage.out
+	make mock
+	go test -coverprofile=resources/coverage.out ./...
+	go tool cover -html=resources/coverage.out -o resources/coverage.html
+	go tool cover -func resources/coverage.out
 
 engine:
 	go build -o ${BINARY} app/*.go
@@ -30,6 +31,9 @@ run:
 
 stop:
 	docker-compose down
+
+mock:
+	go generate ./...
 
 swag:
 	swag init --parseDependency --output resources/webapps/swagger --outputTypes go,yaml
