@@ -29,20 +29,23 @@ This project has  4 Domain layer :
 ![golang clean architecture](https://github.com/Gary-Gs/go-clean-arch/raw/master/resources/clean-arch.png)
 
 ### How to run this project in containerized environment
-1. pre-requisite: golang v1.6+ and docker
-2. install make: `brew install make` (macOS) or `apt-get install make` (Linux)
-3. install tools: `make tools`
-4. follow steps below:
+pre-requisite: golang v1.6+ and docker
 
 ```bash
 # move to directory
 $ cd workspace
 
 # Clone into YOUR $GOPATH/src
-$ git clone https://github.com/Gary-Gs/go-clean-arch.git
+$ git clone http://git.envisioncn.com/edge_singapore/golang-blueprint.git
 
 # move to project
-$ cd go-clean-arch
+$ cd golang-blueprint
+
+# install make (macOS) or `apt-get install make` (Linux)
+$ brew install make
+
+# install tools
+$ make tools
 
 # Bring up all dependencies and services
 $ docker-compose up
