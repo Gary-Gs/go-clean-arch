@@ -6,22 +6,6 @@ import (
 	"net/http"
 )
 
-const (
-	OK         = "OK"
-	BadRequest = "bad request"
-)
-
-// ResponseError represent the reseponse error struct
-type ResponseError struct {
-	Message string `json:"message"`
-}
-
-type HttpResponse struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
-}
-
 func getStatusCode(err error) int {
 	if err == nil {
 		return http.StatusOK

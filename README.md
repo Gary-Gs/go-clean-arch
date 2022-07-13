@@ -56,9 +56,17 @@ $ curl localhost:9090/api/v1/articles
 # Stop
 $ make stop
 
-# Generate API Documentation @ http://{host}:{port}/swagger/index.html
+# Generate API Documentation
+# http://localhost:9090/swagger/index.html
 $ make swag
 ```
 
 ## Tools used
 Detailed list can be found in `go.mod` and `Makefile`
+
+## Features out of the box
+- Example CRUD APIs 
+- Containerized with Docker
+- API documentation with Swagger
+- DB migration support
+- Example unit test with GoMonkey

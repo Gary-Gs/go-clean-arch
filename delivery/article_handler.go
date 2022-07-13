@@ -30,36 +30,33 @@ func NewArticleHandler(e *echo.Echo, us domain.ArticleUsecase) {
 // @Tags         articles
 // @Accept       json
 // @Produce      json
-// @Param  article  body      domain.Article  true  "article object"
-// @Success      200  {object}   HttpResponse
-// @Failure      400  {object}  HttpResponse
-// @Failure      404  {object}  HttpResponse
-// @Failure      500  {object}  HttpResponse
+// @Param  article  body domain.Article  true  "article object"
+// @Success      200  {object}   domain.HttpResponse{data=domain.Article}
 // @Router       /api/v1/articles [post]
 func (a *ArticleHandler) CreateOrUpdate(c echo.Context) (err error) {
 	var article domain.Article
 	if err = c.Bind(&article); err != nil {
-		return c.JSON(getStatusCode(err), HttpResponse{
+		return c.JSON(getStatusCode(err), domain.HttpResponse{
 			Code:    getStatusCode(err),
 			Message: err.Error(),
 		})
 	}
 	if err = c.Validate(article); err != nil {
-		return c.JSON(getStatusCode(err), HttpResponse{
+		return c.JSON(getStatusCode(err), domain.HttpResponse{
 			Code:    getStatusCode(err),
 			Message: err.Error(),
 		})
 	}
 
 	if err = a.AUsecase.Upsert(c.Request().Context(), &article); err != nil {
-		return c.JSON(getStatusCode(err), HttpResponse{
+		return c.JSON(getStatusCode(err), domain.HttpResponse{
 			Code:    getStatusCode(err),
 			Message: err.Error(),
 		})
 	}
-	return c.JSON(getStatusCode(err), HttpResponse{
+	return c.JSON(getStatusCode(err), domain.HttpResponse{
 		Code:    getStatusCode(err),
-		Message: OK,
+		Message: domain.OK,
 		Data:    article,
 	})
 }
@@ -70,23 +67,37 @@ func (a *ArticleHandler) CreateOrUpdate(c echo.Context) (err error) {
 // @Tags         articles
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}   HttpResponse
-// @Failure      400  {object}  HttpResponse
-// @Failure      404  {object}  HttpResponse
-// @Failure      500  {object}  HttpResponse
+// @Param  page  query int false  "page number"
+// @Param  size  query int false  "page size"
+// @Param  sort  query string false  "sort by field"
+// @Success      200  {object} domain.HttpResponse{data=domain.ArticlesResponse}
 // @Router       /api/v1/articles [get]
-func (a *ArticleHandler) FetchArticle(c echo.Context) error {
+func (a *ArticleHandler) FetchArticle(c echo.Context) (err error) {
 	ctx := c.Request().Context()
-	res, err := a.AUsecase.Fetch(ctx)
-	if err != nil {
-		return c.JSON(getStatusCode(err), HttpResponse{
+	p := domain.NewPagination()
+	if err = c.Bind(&p); err != nil {
+		return c.JSON(getStatusCode(err), domain.HttpResponse{
 			Code:    getStatusCode(err),
 			Message: err.Error(),
 		})
 	}
-	return c.JSON(getStatusCode(err), HttpResponse{
+	if err = c.Validate(p); err != nil {
+		return c.JSON(getStatusCode(err), domain.HttpResponse{
+			Code:    getStatusCode(err),
+			Message: err.Error(),
+		})
+	}
+
+	res, err := a.AUsecase.Fetch(ctx, p)
+	if err != nil {
+		return c.JSON(getStatusCode(err), domain.HttpResponse{
+			Code:    getStatusCode(err),
+			Message: err.Error(),
+		})
+	}
+	return c.JSON(getStatusCode(err), domain.HttpResponse{
 		Code:    getStatusCode(err),
-		Message: OK,
+		Message: domain.OK,
 		Data:    res,
 	})
 }
@@ -98,31 +109,28 @@ func (a *ArticleHandler) FetchArticle(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param id   path      int  true  "article ID"
-// @Success      200  {object}   HttpResponse
-// @Failure      400  {object}  HttpResponse
-// @Failure      404  {object}  HttpResponse
-// @Failure      500  {object}  HttpResponse
+// @Success      200  {object}   domain.HttpResponse{data=domain.Article}
 // @Router       /api/v1/articles/{id} [get]
-func (a *ArticleHandler) GetByID(c echo.Context) error {
+func (a *ArticleHandler) GetByID(c echo.Context) (err error) {
 	ids := c.Param("id")
 	id, err := strconv.ParseInt(ids, 10, 64)
 	if err != nil {
-		return c.JSON(getStatusCode(err), HttpResponse{
+		return c.JSON(getStatusCode(err), domain.HttpResponse{
 			Code:    getStatusCode(err),
-			Message: BadRequest,
+			Message: domain.BadRequest,
 		})
 	}
 
 	res, err := a.AUsecase.GetByID(c.Request().Context(), id)
 	if err != nil {
-		return c.JSON(getStatusCode(err), HttpResponse{
+		return c.JSON(getStatusCode(err), domain.HttpResponse{
 			Code:    getStatusCode(err),
 			Message: err.Error(),
 		})
 	}
-	return c.JSON(getStatusCode(err), HttpResponse{
+	return c.JSON(getStatusCode(err), domain.HttpResponse{
 		Code:    getStatusCode(err),
-		Message: OK,
+		Message: domain.OK,
 		Data:    res,
 	})
 }
@@ -131,26 +139,21 @@ func (a *ArticleHandler) GetByID(c echo.Context) error {
 // @Summary      Delete articles by id
 // @Description  Delete articles by id
 // @Tags         articles
-// @Accept       json
-// @Produce      json
 // @Param id   path      int  true  "article ID"
-// @Success      200  {object}   HttpResponse
-// @Failure      400  {object}  HttpResponse
-// @Failure      404  {object}  HttpResponse
-// @Failure      500  {object}  HttpResponse
+// @Success      204
 // @Router       /api/v1/articles/{id} [delete]
 func (a *ArticleHandler) Delete(c echo.Context) (err error) {
 	ids := c.Param("id")
 	id, err := strconv.ParseInt(ids, 10, 64)
 	if err != nil {
-		return c.JSON(getStatusCode(err), HttpResponse{
+		return c.JSON(getStatusCode(err), domain.HttpResponse{
 			Code:    getStatusCode(err),
-			Message: BadRequest,
+			Message: domain.BadRequest,
 		})
 	}
 
 	if err = a.AUsecase.Delete(c.Request().Context(), id); err != nil {
-		return c.JSON(getStatusCode(err), HttpResponse{
+		return c.JSON(getStatusCode(err), domain.HttpResponse{
 			Code:    getStatusCode(err),
 			Message: err.Error(),
 		})

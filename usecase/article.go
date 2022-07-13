@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"math"
 	"sync"
 	"time"
 
@@ -25,7 +26,7 @@ func NewArticleUsecase(a domain.ArticleRepository, ar domain.AuthorRepository, t
 }
 
 // fillAuthorDetails is a concurrent function to fill author details implemented with goroutines and sync.WaitGroup
-func (a *articleUsecase) fillAuthorDetails(c context.Context, data []domain.Article) (res []*domain.ArticleResponse, errs []error) {
+func (a *articleUsecase) fillAuthorDetails(c context.Context, data []domain.Article) (res []*domain.ArticleWithAuthor, errs []error) {
 	// get all ids
 	mapAuthors := map[int64]domain.Author{}
 	for _, article := range data {
@@ -72,7 +73,7 @@ func (a *articleUsecase) fillAuthorDetails(c context.Context, data []domain.Arti
 	// merge data
 	for _, article := range data {
 		author := mapAuthors[article.AuthorID]
-		res = append(res, &domain.ArticleResponse{
+		res = append(res, &domain.ArticleWithAuthor{
 			ID:      article.ID,
 			Title:   article.Title,
 			Content: article.Content,
@@ -83,23 +84,32 @@ func (a *articleUsecase) fillAuthorDetails(c context.Context, data []domain.Arti
 	return res, nil
 }
 
-func (a *articleUsecase) Fetch(c context.Context) ([]*domain.ArticleResponse, error) {
+func (a *articleUsecase) Fetch(c context.Context, pagination domain.Pagination) (res *domain.ArticlesResponse, err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 
-	articles, err := a.articleRepo.Fetch(ctx)
+	articles, err := a.articleRepo.Fetch(ctx, pagination)
 	if err != nil {
 		return nil, err
 	}
 
-	res, errs := a.fillAuthorDetails(ctx, articles)
+	awa, errs := a.fillAuthorDetails(ctx, articles)
 	if errs != nil {
 		return nil, fmt.Errorf("failed to fill author details: %v", errs)
 	}
-	return res, err
+
+	count, err := a.articleRepo.CountAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	pagination.TotalPage = int64(math.Ceil(float64(count) / float64(pagination.Size)))
+	return &domain.ArticlesResponse{
+		ArticleWithAuthors: awa,
+		Pagination:         pagination,
+	}, err
 }
 
-func (a *articleUsecase) GetByID(c context.Context, id int64) (*domain.ArticleResponse, error) {
+func (a *articleUsecase) GetByID(c context.Context, id int64) (*domain.ArticleWithAuthor, error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 
@@ -112,7 +122,7 @@ func (a *articleUsecase) GetByID(c context.Context, id int64) (*domain.ArticleRe
 	if err != nil {
 		return nil, err
 	}
-	return &domain.ArticleResponse{
+	return &domain.ArticleWithAuthor{
 		ID:      article.ID,
 		Title:   article.Title,
 		Content: article.Content,

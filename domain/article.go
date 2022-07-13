@@ -12,33 +12,41 @@ type Article struct {
 	Title     string     `json:"title" validate:"required"`
 	Content   string     `json:"content" validate:"required"`
 	AuthorID  int64      `json:"author_id" validate:"required"`
-	UpdatedAt *time.Time `json:"updated_at,omitempty" gorm:"-"`
-	CreatedAt *time.Time `json:"created_at,omitempty" gorm:"-"`
+	UpdatedAt *time.Time `json:"updated_at,omitempty" gorm:"-" swaggerignore:"true"`
+	CreatedAt *time.Time `json:"created_at,omitempty" gorm:"-" swaggerignore:"true"`
 }
 
 func (Article) TableName() string {
 	return "article"
 }
 
-type ArticleResponse struct {
+// ArticlesResponse ...
+// @Description articles response
+type ArticlesResponse struct {
+	ArticleWithAuthors []*ArticleWithAuthor `json:"articles"`
+	Pagination         Pagination           `json:"pagination"`
+}
+
+type ArticleWithAuthor struct {
 	ID      int64  `json:"id"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
 	Author  Author `json:"author"`
 }
 
-// ArticleUsecase represent the article's usecases
+// ArticleUsecase ...
 type ArticleUsecase interface {
-	Fetch(ctx context.Context) ([]*ArticleResponse, error)
-	GetByID(ctx context.Context, id int64) (*ArticleResponse, error)
+	Fetch(ctx context.Context, pagination Pagination) (*ArticlesResponse, error)
+	GetByID(ctx context.Context, id int64) (*ArticleWithAuthor, error)
 	Upsert(ctx context.Context, article *Article) error
 	Delete(ctx context.Context, id int64) error
 }
 
-// ArticleRepository represent the article's repository contract
+// ArticleRepository ...
 type ArticleRepository interface {
-	Fetch(ctx context.Context) (res []Article, err error)
+	Fetch(ctx context.Context, pagination Pagination) (res []Article, err error)
 	GetByID(ctx context.Context, id int64) (Article, error)
 	Upsert(ctx context.Context, article *Article) error
 	Delete(ctx context.Context, id int64) error
+	CountAll(ctx context.Context) (int64, error)
 }
