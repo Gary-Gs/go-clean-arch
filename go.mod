@@ -3,6 +3,7 @@ module github.com/Gary-Gs/go-clean-arch
 go 1.16
 
 require (
+	github.com/agiledragon/gomonkey/v2 v2.8.0
 	github.com/go-openapi/spec v0.20.6 // indirect
 	github.com/go-openapi/swag v0.21.1 // indirect
 	github.com/go-playground/validator/v10 v10.11.0

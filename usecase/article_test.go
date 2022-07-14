@@ -9,6 +9,7 @@ import (
 	"testing"
 )
 
+// GoMock interface mocking usage example
 func TestArticleUsecase_GetByID(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()

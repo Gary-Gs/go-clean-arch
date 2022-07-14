@@ -72,4 +72,4 @@ Detailed list can be found in `go.mod` and `Makefile`
 - Containerized with Docker
 - API documentation with Swagger
 - DB migration support
-- Example unit test with GoMock
+- Example unit test with GoMock & GoMonkey
