@@ -12,6 +12,7 @@ services:
       - DATABASE_PORT=3306
       - DATABASE_USERNAME=user
       - DATABASE_PASSWORD=root
+      - FEATUREFLAG_ENABLEDB=true
     depends_on:
       - go_clean_arch_db
     volumes:
