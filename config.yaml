@@ -6,7 +6,7 @@ appConfig:
   latencyWarningSec: 3
 
 featureFlag:
-  enableDB: true
+  enableDB: false
   enableExcludeUrl: true
 
 database:

@@ -56,6 +56,7 @@ func (a *App) InitApiEcho() *echo.Echo {
 	e.Use(midW.GenerateRequestID)
 	e.Use(midW.CORS)
 	e.Use(midW.MiddlewareLogging)
+	e.Use(middleware.Recover())
 	e.Validator = &CustomValidator{validator: validator.New()}
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
@@ -195,7 +196,7 @@ func initUseCases(repos Repositories, cnf config.Configs) Usecase {
 }
 
 func customHTTPErrorHandler(err error, c echo.Context) {
-	log.Error(err)
+	log.Error("server error: ", err.Error())
 	_ = c.JSON(http.StatusInternalServerError, struct {
 		Code    int    `json:"code"`
 		Message string `json:"message"`
