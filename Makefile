@@ -2,11 +2,13 @@ BINARY=engine
 
 tools:
 	@echo "installing air for hot reloading"
-	go get -u github.com/cosmtrek/air
+	go install github.com/cosmtrek/air@latest
 	@echo "installing sql-migrate to handle schema migrations"
-	go get -v github.com/rubenv/sql-migrate/...
+	go install github.com/rubenv/sql-migrate/...@latest
 	@echo "installing swagger documentation"
-	go get -u github.com/swaggo/swag/cmd/swag
+	go install github.com/swaggo/swag/cmd/swag@latest
+	@echo "installing GoMock for unit testing"
+	go install github.com/golang/mock/mockgen@latest
 
 test:
 	make mock

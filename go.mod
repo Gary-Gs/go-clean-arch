@@ -1,6 +1,6 @@
 module github.com/Gary-Gs/go-clean-arch
 
-go 1.16
+go 1.18
 
 require (
 	github.com/agiledragon/gomonkey/v2 v2.8.0
@@ -12,7 +12,7 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/sirupsen/logrus v1.6.0
+	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.12.0
 	github.com/stretchr/testify v1.7.1
 	github.com/swaggo/echo-swagger v1.1.4
