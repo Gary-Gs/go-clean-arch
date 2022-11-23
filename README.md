@@ -39,7 +39,7 @@ $ cd workspace
 $ git clone https://github.com/Gary-Gs/go-clean-arch.git
 
 # move to project
-$ cd golang-blueprint
+$ cd go-clean-arch
 
 # install make (macOS) or `apt-get install make` (Linux)
 $ brew install make
