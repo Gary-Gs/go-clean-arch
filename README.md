@@ -36,10 +36,10 @@ pre-requisite: golang v1.6+ and docker
 $ cd workspace
 
 # Clone into YOUR $GOPATH/src
-$ git clone http://git.envisioncn.com/edge_singapore/golang-blueprint.git
+$ git clone https://github.com/Gary-Gs/go-clean-arch.git
 
 # move to project
-$ cd golang-blueprint
+$ cd go-clean-arch
 
 # install make (macOS) or `apt-get install make` (Linux)
 $ brew install make
