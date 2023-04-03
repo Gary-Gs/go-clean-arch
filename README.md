@@ -68,6 +68,8 @@ $ make swag
 Detailed list can be found in `go.mod` and `Makefile`
 
 test
+test
+test
 
 ## Features out of the box
 - Example CRUD APIs 
