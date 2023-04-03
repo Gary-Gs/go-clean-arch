@@ -67,6 +67,8 @@ $ make swag
 ## Tools used
 Detailed list can be found in `go.mod` and `Makefile`
 
+test
+
 ## Features out of the box
 - Example CRUD APIs 
 - Containerized with Docker
