@@ -73,3 +73,5 @@ Detailed list can be found in `go.mod` and `Makefile`
 - API documentation with Swagger
 - DB migration support
 - Example unit test with GoMock & GoMonkey
+
+test
