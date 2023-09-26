@@ -15,9 +15,11 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"io"
 	log2 "log"
 	"net/http"
 	"net/url"
@@ -75,6 +77,16 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 	return nil
 }
 
+func getLumberjackLogger() *lumberjack.Logger {
+	return &lumberjack.Logger{
+		Filename:   "app.log", // Log file path
+		MaxSize:    10,        // Maximum file size before rotation in MB
+		MaxBackups: 30,        // Maximum number of old log files to retain
+		MaxAge:     28,        // Maximum number of days to retain old log files
+		Compress:   false,     // Whether to compress the rotated log files
+	}
+}
+
 func GetNewInstance(file string) (App, error) {
 	var app App
 	configs, err := LoadConfigFile(file)
@@ -111,7 +123,8 @@ func LoadConfigFile(file string) (config.Configs, error) {
 		return c, fmt.Errorf("failed to unmarshal config file, err=%s", err.Error())
 	}
 	// logger initialization
-	log.SetOutput(os.Stdout)
+	multiWriter := io.MultiWriter(os.Stdout, getLumberjackLogger())
+	log.SetOutput(multiWriter)
 	log.SetFormatter(&log.TextFormatter{
 		ForceColors:            true,
 		DisableColors:          false,
